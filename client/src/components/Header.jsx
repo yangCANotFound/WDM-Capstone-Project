@@ -1,21 +1,23 @@
 /**
  * src/components/Header.jsx
  * ---------------------------------------------------------------------------
- * Phase 8/9 — the persistent, AUTH-AWARE navigation bar.
+ * Persistent navigation bar in the Lab 19 style: solid slate-800 band,
+ * bold site name on the left, underlined white links, theme toggle on the right.
  *
- * Behaviour required by the spec:
- *   - not logged in : "Login" + "Register" links
- *   - logged in     : "Admin Dashboard" link + "Logout" button + the username
+ * It stays AUTH-AWARE (Capstone requirement):
+ *   - logged out -> "Login" + "Register"
+ *   - logged in  -> "Admin Dashboard" + username + "Logout"
  *
- * It consumes the Auth Context directly (no prop drilling) and uses NavLink so
- * the active route is highlighted. Props:
- *   - (none required) it reads everything from useAuth()
+ * Responsive: below `md` the links collapse into a hamburger drawer so the
+ * site stays usable on a phone.
  * ---------------------------------------------------------------------------
  */
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import { site } from '../data/site.js';
+import ThemeToggle from './ThemeToggle.jsx';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', end: true },
@@ -31,8 +33,8 @@ function NavItem({ to, label, end, onClick }) {
       end={end}
       onClick={onClick}
       className={({ isActive }) =>
-        `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-          isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-700 hover:bg-slate-100'
+        `px-2.5 py-1.5 text-sm font-medium text-white underline-offset-4 transition-colors ${
+          isActive ? 'underline decoration-2' : 'hover:underline hover:decoration-1'
         }`
       }
     >
@@ -45,7 +47,7 @@ export default function Header() {
   const { isAuthenticated, user, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false); // useState for UI state
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const closeMobile = () => setMobileOpen(false);
 
@@ -57,116 +59,135 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/85 backdrop-blur">
+    <header className="bg-slate-800 text-white">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        {/* ---- Brand ---- */}
-        <Link to="/" className="flex items-center gap-2.5" onClick={closeMobile}>
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink-900 text-white">
-            <svg viewBox="0 0 64 64" className="h-5 w-5" aria-hidden="true">
-              <path
-                d="M20 42 L30 20 L38 34 L44 24 L48 42"
-                fill="none"
-                stroke="#598cff"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+        {/* Brand */}
+        <Link to="/" onClick={closeMobile} className="flex shrink-0 items-center gap-2.5">
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-blue-700 text-sm font-extrabold text-white">
+            {site.initials}
           </span>
-          <span className="text-base font-extrabold tracking-tight text-ink-900">
-            Alex Chen<span className="text-brand-600">.</span>
-          </span>
+          <span className="text-xl font-bold text-white">{site.fullName}</span>
         </Link>
 
-        {/* ---- Desktop nav ---- */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
-          {NAV_LINKS.map((l) => (
-            <NavItem key={l.to} {...l} />
-          ))}
+        {/* Desktop navigation */}
+        <nav aria-label="Main navigation" className="hidden md:block">
+          <ul className="flex items-center gap-1">
+            {NAV_LINKS.map((l) => (
+              <li key={l.to}>
+                <NavItem {...l} />
+              </li>
+            ))}
+          </ul>
         </nav>
 
-        {/* ---- Desktop auth area (auth-aware) ---- */}
+        {/* Desktop right side: theme + auth-aware controls */}
         <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
+
           {isAuthenticated ? (
             <>
               <NavLink
                 to="/admin"
-                className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm font-semibold ${
-                    isActive ? 'bg-ink-900 text-white' : 'bg-ink-900 text-white hover:bg-ink-700'
-                  }`
-                }
+                className="rounded-md border border-blue-400 bg-blue-700 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-600"
               >
                 Admin Dashboard
               </NavLink>
-              <span className="ml-1 hidden items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3 lg:flex">
-                <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-[11px] font-bold uppercase text-white">
-                  {user?.username?.[0] || '?'}
-                </span>
-                <span className="text-xs font-semibold text-ink-700">{user?.username}</span>
-              </span>
-              <button type="button" onClick={handleLogout} className="btn-secondary btn-sm">
+              <span className="hidden text-xs text-slate-300 lg:inline">{user?.username}</span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-md border border-slate-400 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-700"
+              >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-ghost btn-sm">
+              <Link
+                to="/login"
+                className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-white underline-offset-4 hover:underline"
+              >
                 Login
               </Link>
-              <Link to="/register" className="btn-primary btn-sm">
+              <Link
+                to="/register"
+                className="rounded-md border border-blue-400 bg-blue-700 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-600"
+              >
                 Register
               </Link>
             </>
           )}
         </div>
 
-        {/* ---- Mobile hamburger ---- */}
-        <button
-          type="button"
-          className="btn-ghost md:hidden"
-          aria-expanded={mobileOpen}
-          aria-label="Toggle navigation menu"
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? '✕' : '☰'}
-        </button>
+        {/* Mobile controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="rounded-md border border-slate-400 px-2.5 py-1.5 text-sm font-semibold text-white"
+            aria-expanded={mobileOpen}
+            aria-label="Toggle navigation menu"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </div>
 
-      {/* ---- Mobile drawer ---- */}
+      {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="border-t border-slate-200 bg-white md:hidden">
-          <nav className="container-page flex flex-col gap-1 py-3" aria-label="Mobile navigation">
+        <nav
+          aria-label="Mobile navigation"
+          className="border-t border-slate-600 bg-slate-800 md:hidden"
+        >
+          <ul className="container-page flex flex-col gap-1 py-3">
             {NAV_LINKS.map((l) => (
-              <NavItem key={l.to} {...l} onClick={closeMobile} />
+              <li key={l.to}>
+                <NavItem {...l} onClick={closeMobile} />
+              </li>
             ))}
-
-            <div className="mt-2 border-t border-slate-200 pt-3">
+            <li className="mt-2 border-t border-slate-600 pt-3">
               {isAuthenticated ? (
                 <div className="flex flex-col gap-2">
-                  <p className="px-3 text-xs text-ink-500">
-                    Logged in as <span className="font-semibold text-ink-800">{user?.username}</span>
+                  <p className="text-xs text-slate-300">
+                    Logged in as <span className="font-semibold text-white">{user?.username}</span>
                   </p>
-                  <Link to="/admin" className="btn-primary" onClick={closeMobile}>
+                  <Link
+                    to="/admin"
+                    onClick={closeMobile}
+                    className="rounded-md bg-blue-700 px-3 py-2 text-center text-sm font-semibold text-white"
+                  >
                     Admin Dashboard
                   </Link>
-                  <button type="button" className="btn-secondary" onClick={handleLogout}>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="rounded-md border border-slate-400 px-3 py-2 text-sm font-semibold text-white"
+                  >
                     Logout
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
-                  <Link to="/login" className="btn-secondary" onClick={closeMobile}>
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    onClick={closeMobile}
+                    className="flex-1 rounded-md border border-slate-400 px-3 py-2 text-center text-sm font-semibold text-white"
+                  >
                     Login
                   </Link>
-                  <Link to="/register" className="btn-primary" onClick={closeMobile}>
+                  <Link
+                    to="/register"
+                    onClick={closeMobile}
+                    className="flex-1 rounded-md bg-blue-700 px-3 py-2 text-center text-sm font-semibold text-white"
+                  >
                     Register
                   </Link>
                 </div>
               )}
-            </div>
-          </nav>
-        </div>
+            </li>
+          </ul>
+        </nav>
       )}
     </header>
   );

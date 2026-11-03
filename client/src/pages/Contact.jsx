@@ -12,6 +12,7 @@
 import { useState } from 'react';
 import { api } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
+import { site } from '../data/site.js';
 
 const EMPTY = { name: '', email: '', message: '' };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,18 +71,17 @@ export default function Contact() {
     <div className="container-page grid gap-12 py-12 md:py-16 lg:grid-cols-5">
       {/* ---- Left: intro ---- */}
       <aside className="lg:col-span-2">
-        <p className="text-sm font-bold uppercase tracking-wider text-brand-600">Contact</p>
-        <h1 className="section-title mt-1">Let’s talk</h1>
-        <p className="muted mt-3 leading-relaxed">
+        <h1 className="section-title mb-3">Contact</h1>
+        <p className="text-base leading-relaxed">
           Have a project in mind, a question about the code, or just want to say hi? Send a message —
           it is stored in MongoDB via{' '}
-          <code className="font-mono text-xs">POST /api/contact</code> and I will get back to you.
+          <code className="font-mono text-sm">POST /api/contact</code> and I will get back to you.
         </p>
 
         <ul className="mt-8 space-y-4">
           {[
-            { icon: '✉', label: 'Email', value: 'hello@example.com' },
-            { icon: '⌖', label: 'Location', value: 'Kuala Lumpur, Malaysia (UTC+8)' },
+            { icon: '✉', label: 'Email', value: site.email },
+            { icon: '⌖', label: 'Location', value: site.location },
             { icon: '⏱', label: 'Response time', value: 'Usually within 24 hours' },
           ].map((item) => (
             <li key={item.label} className="flex items-start gap-3">

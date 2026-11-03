@@ -88,7 +88,7 @@ export default function Register() {
               value={form.username}
               onChange={handleChange}
               error={fieldErrors.username}
-              placeholder="alexchen"
+              placeholder="yangzhenshen"
               autoComplete="username"
             />
             <AuthField

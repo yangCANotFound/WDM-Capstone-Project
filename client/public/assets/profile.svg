@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Profile picture of Yang Zhenshen">
+  <rect width="240" height="240" rx="8" fill="#e2e8f0"/>
+  <circle cx="120" cy="120" r="92" fill="#1d4ed8"/>
+  <text x="120" y="120" fill="#ffffff" font-family="Inter, Arial, sans-serif"
+        font-size="72" font-weight="800" text-anchor="middle" dominant-baseline="central">YZ</text>
+</svg>

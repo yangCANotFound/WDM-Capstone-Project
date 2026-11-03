@@ -4,96 +4,235 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------------------------------------------------------------------------
-   Global base styles
---------------------------------------------------------------------------- */
+/* ===========================================================================
+   THEME PALETTE
+   ---------------------------------------------------------------------------
+   Light mode follows the Lab 19 look: light slate page, slate-800 header and
+   footer, blue (blue-700) headings and links, white cards with a slate border.
+   Dark mode is a full inversion driven by the `dark` class on <html>, toggled
+   by ThemeContext (mirrors Lab 19's dark-mode requirement).
+   =========================================================================== */
 @layer base {
   html {
     scroll-behavior: smooth;
   }
+
   body {
-    @apply bg-slate-50 text-ink-800 antialiased;
+    @apply bg-slate-50 text-[#172033] antialiased;
+    font-family: 'Inter', Arial, system-ui, sans-serif;
+    line-height: 1.6;
   }
-  /* Visible keyboard focus for accessibility */
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold tracking-tight;
+  }
+
+  a {
+    @apply text-blue-700;
+  }
+
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-blue-600 ring-offset-2;
+  }
+
+  /* ---------------------------------------------------------------------
+     DARK MODE (html.dark)
+     --------------------------------------------------------------------- */
+  html.dark body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+  }
+
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4 {
+    color: #93c5fd;
+  }
+
+  html.dark a {
+    color: #93c5fd;
+  }
+
+  html.dark .muted,
+  html.dark .text-ink-500,
+  html.dark .text-ink-300 {
+    color: #94a3b8 !important;
+  }
+
+  html.dark .text-ink-700,
+  html.dark .text-ink-800,
+  html.dark .text-ink-900 {
+    color: #e2e8f0 !important;
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Reusable component classes (Tailwind @apply) — keeps JSX readable and the
-   design consistent across pages. This is the "modern styling" layer.
---------------------------------------------------------------------------- */
+/* ===========================================================================
+   COMPONENT CLASSES
+   Lab 19 card = white background + 1px #64748b border + 16px padding.
+   Every class below has an explicit dark-mode twin so nothing turns
+   unreadable when the theme flips.
+   =========================================================================== */
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[1100px] px-4 sm:px-6;
   }
 
+  /* ---------------- Buttons ---------------- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
-           transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2
+           text-sm font-semibold transition-colors duration-150
+           disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-sm;
+    @apply btn border-blue-700 bg-blue-700 text-white hover:border-blue-800 hover:bg-blue-800;
   }
   .btn-secondary {
-    @apply btn border border-slate-300 bg-white text-ink-800 hover:bg-slate-100;
+    @apply btn border-[#64748b] bg-white text-[#172033] hover:bg-slate-100;
   }
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700;
+    @apply btn border-red-700 bg-red-700 text-white hover:border-red-800 hover:bg-red-800;
   }
   .btn-ghost {
-    @apply btn text-ink-700 hover:bg-slate-100;
+    @apply btn border-transparent text-blue-700 hover:bg-slate-100;
   }
   .btn-sm {
-    @apply px-3 py-1.5 text-xs;
+    @apply px-2.5 py-1 text-xs;
   }
 
+  /* ---------------- Forms ---------------- */
   .label {
-    @apply mb-1.5 block text-sm font-medium text-ink-800;
+    @apply mb-1 block text-sm font-semibold text-[#172033];
   }
   .input {
-    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-ink-900
-           placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-md border border-[#64748b] bg-white px-3 py-2 text-sm
+           text-[#172033] placeholder:text-slate-400
+           focus:border-blue-600 focus:ring-2 focus:ring-blue-100;
   }
   .textarea {
-    @apply input min-h-[120px] resize-y leading-relaxed;
+    @apply input min-h-[110px] resize-y leading-relaxed;
   }
 
+  /* ---------------- Cards (Lab 19 signature) ---------------- */
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
+    @apply rounded-lg border border-[#64748b] bg-white;
   }
 
   .badge {
-    @apply inline-flex items-center rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700;
+    @apply inline-flex items-center rounded-full border border-blue-200 bg-blue-50
+           px-2 py-0.5 text-xs font-semibold text-blue-700;
   }
 
   .section-title {
-    @apply text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl;
-  }
-  .muted {
-    @apply text-sm text-ink-500;
+    @apply text-2xl font-bold text-blue-700 sm:text-[26px];
   }
 
+  .muted {
+    @apply text-sm text-slate-500;
+  }
+
+  /* ---------------- Alerts ---------------- */
   .alert {
-    @apply rounded-xl border px-4 py-3 text-sm;
+    @apply rounded-md border px-4 py-3 text-sm;
   }
   .alert-error {
-    @apply alert border-red-200 bg-red-50 text-red-700;
+    @apply alert border-2 border-amber-700 bg-amber-50 text-amber-900;
   }
   .alert-success {
-    @apply alert border-emerald-200 bg-emerald-50 text-emerald-700;
+    @apply alert border-emerald-600 bg-emerald-50 text-emerald-800;
   }
   .alert-info {
-    @apply alert border-brand-200 bg-brand-50 text-brand-800;
+    @apply alert border-blue-300 bg-blue-50 text-blue-900;
   }
 
   .link {
-    @apply font-semibold text-brand-600 underline-offset-4 hover:text-brand-700 hover:underline;
+    @apply font-semibold text-blue-700 underline underline-offset-4;
   }
 
-  /* Skeleton shimmer for loading states */
   .skeleton {
-    @apply animate-pulse rounded-xl bg-slate-200;
+    @apply animate-pulse rounded-md bg-slate-200;
+  }
+
+  /* Profile picture frame — Lab 19 keeps it light; dark mode dims the frame. */
+  html.dark .profile-image {
+    background-color: #172033;
+    border-color: #94a3b8;
+  }
+
+  /* ---------------- Dark-mode overrides for the classes above ---------- */
+  html.dark .card {
+    background-color: #172033;
+    border-color: #94a3b8;
+  }
+  html.dark .btn-secondary {
+    background-color: #172033;
+    border-color: #94a3b8;
+    color: #f1f5f9;
+  }
+  html.dark .btn-secondary:hover {
+    background-color: #1f2a44;
+  }
+  html.dark .btn-ghost {
+    color: #93c5fd;
+  }
+  html.dark .btn-ghost:hover {
+    background-color: #1f2a44;
+  }
+  html.dark .label {
+    color: #f1f5f9;
+  }
+  html.dark .input {
+    background-color: #0f172a;
+    border-color: #94a3b8;
+    color: #f1f5f9;
+  }
+  html.dark .input::placeholder {
+    color: #64748b;
+  }
+  html.dark .badge {
+    background-color: #1e3a8a;
+    border-color: #1d4ed8;
+    color: #bfdbfe;
+  }
+  html.dark .section-title {
+    color: #93c5fd;
+  }
+  html.dark .alert-error {
+    background-color: #451a03;
+    border-color: #f59e0b;
+    color: #fde68a;
+  }
+  html.dark .alert-success {
+    background-color: #052e16;
+    border-color: #22c55e;
+    color: #bbf7d0;
+  }
+  html.dark .alert-info {
+    background-color: #172554;
+    border-color: #3b82f6;
+    color: #bfdbfe;
+  }
+  html.dark .link {
+    color: #93c5fd;
+  }
+  html.dark .skeleton {
+    background-color: #334155;
+  }
+  /* Inline utility classes used across pages */
+  html.dark .border-slate-200,
+  html.dark .border-slate-300 {
+    border-color: #334155 !important;
+  }
+  html.dark .bg-slate-100 {
+    background-color: #1e293b !important;
+  }
+  html.dark .bg-white {
+    background-color: #172033 !important;
+  }
+  html.dark .bg-slate-50 {
+    background-color: #0f172a !important;
   }
 }

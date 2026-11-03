@@ -1,0 +1,29 @@
+# =============================================================================
+# render.yaml — 只用于声明【前端静态站点】
+# -----------------------------------------------------------------------------
+# ⚠️ 背景说明（重要）：
+#   后端 Web Service 是在 Render 网站里【手动创建】的，不受本文件管理。
+#   本文件只定义前端 static site，用 Blueprint 方式新建，不会影响后端。
+#
+# 作用：
+#   1. 用 client/ 目录构建前端，产物在 dist/
+#   2. routes 的 rewrite 规则让 /blog/123、/admin 等子路径回落到 index.html
+#      —— 否则刷新子页面会 404（SPA 必需）
+#   3. envVars 声明 VITE_API_URL（Vite 构建期内联进 bundle）
+# =============================================================================
+
+services:
+  - type: web
+    name: capstone-portfolio
+    runtime: static
+    rootDir: client
+    buildCommand: npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://wdm-capstone-project.onrender.com
+    # SPA 重写：所有路径回落到 index.html（浏览器地址栏保持不变）
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,0 +1,25 @@
+# Netlify build configuration for the React SPA.
+# NOTE for deployment: set the "Base directory" to `client` in the Netlify UI,
+# or copy this file to the repository root and change `publish` to `client/dist`.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback: every route serves index.html so /blog/:id and /admin work on
+# a hard refresh (React Router then resolves the path client-side).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Never cache the entry HTML (hashed assets in /assets are cached by the CDN).
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
